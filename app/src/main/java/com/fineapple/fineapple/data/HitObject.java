@@ -5,22 +5,18 @@ package com.fineapple.fineapple.data;
  */
 
 public class HitObject {
-    float x, y, z;
-    float accelerationValue;
+    public float accelerationValue;
 
     public HitObject() {
         this(0, 0, 0);
     }
 
-    public HitObject(float mX, float mY, float mZ) {
-        this.x = mX;
-        this.y = mY;
-        this.z = mZ;
-        this.accelerationValue = (float) (Math.sqrt((x*x)+(y*y)+(z*z))-85.0f) * 1000;
+    public HitObject(float x, float y, float z) {
+        this.accelerationValue = (float) (Math.sqrt((x*x)+(y*y)+(z*z)));
     }
 
     @Override
     public String toString() {
-        return "hit obj is " + accelerationValue + "(" + x + " / " + y + " / " + z + ")";
+        return "hit obj is " + accelerationValue;
     }
 }

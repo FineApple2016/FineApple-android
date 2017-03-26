@@ -9,7 +9,6 @@ import android.widget.Button;
 import com.fineapple.fineapple.R;
 
 public class MainActivity extends AppCompatActivity {
-
     Button dataBtn;
 
     @Override

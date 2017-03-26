@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.fineapple.fineapple.R;
+import com.fineapple.fineapple.activities.AnalysisActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,31 +34,32 @@ public class SampleDataGenerator {
     private void readData(Context context, int file) throws IOException {
         InputStream is = context.getResources().openRawResource(file);
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        StringBuilder sb = new StringBuilder();
         String mLine = reader.readLine();
 
         while (mLine != null) {
-            sb.append(mLine);
             mLine = reader.readLine();
             StringTokenizer parser = new StringTokenizer(mLine, ",");
 
             int index = 0;
             float x = 0, y = 0, z = 0;
             while(parser.hasMoreTokens()) {
-                if (index == 6) {
+                if (index == 5) {
                     x = Float.parseFloat(parser.nextToken());
-                } else if (index == 7) {
+                } else if (index == 6) {
                     y = Float.parseFloat(parser.nextToken());
-                } else if (index == 8) {
+                } else if (index == 7) {
                     z = Float.parseFloat(parser.nextToken());
                 } else {
                     parser.nextToken();
                 }
                 index++;
+
             }
-            HitObject hitObject = new HitObject(x, y, z);
-            Log.d("hansjin", hitObject.toString());
-            data.add(hitObject);
+//            if (data.size() < 4000) {
+                HitObject hitObject = new HitObject(x, y, z);
+                data.add(hitObject);
+//            }
+//            Log.d("hansjin", hitObject.toString());
         }
         reader.close();
     }
