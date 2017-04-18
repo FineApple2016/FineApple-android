@@ -26,6 +26,7 @@ public class AnalysisActivity extends AppCompatActivity implements OnChartValueS
     AnalysisActivity activity;
     SampleDataGenerator generator;
     LineChart chart;
+    int index;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,9 @@ public class AnalysisActivity extends AppCompatActivity implements OnChartValueS
         setContentView(R.layout.activity_analysis);
 
         this.activity = this;
+
+        index = getIntent().getIntExtra("data", 0);
+
         chart = (LineChart) findViewById(R.id.chart);
         initChartView();
         workThread.start();
@@ -45,7 +49,7 @@ public class AnalysisActivity extends AppCompatActivity implements OnChartValueS
                 AnalysisActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        generator = new SampleDataGenerator(activity);
+                        generator = new SampleDataGenerator(activity, index);
                         ArrayList<Entry> dataEntry = makeEntryData();
                         setChartData(dataEntry);
                     }

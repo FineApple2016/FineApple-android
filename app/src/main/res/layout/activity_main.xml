@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
@@ -8,12 +8,43 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
     tools:context="com.fineapple.fineapple.activities.MainActivity">
 
     <Button
-        android:id="@+id/data_btn"
+        android:id="@+id/real_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="REAL - TIME" />
+    <Button
+        android:id="@+id/data_btn1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="DATA SAMPLE - 1" />
+    <Button
+        android:id="@+id/data_btn2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="DATA SAMPLE - 2" />
+    <Button
+        android:id="@+id/data_btn3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="DATA SAMPLE - 3" />
+    <Button
+        android:id="@+id/data_btn4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="DATA SAMPLE - 4" />
+    <Button
+        android:id="@+id/data_btn5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="DATA SAMPLE - 5" />
 
-</RelativeLayout>
+</LinearLayout>
