@@ -9,6 +9,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.util.StringTokenizer;
 import java.util.UUID;
 
 /**
@@ -29,6 +32,7 @@ public class BTActivity extends Activity {
     private static final String TAG = "bluetooth2";
 
     TextView txtArduino;
+    ScrollView scroll;
     Handler h;
 
     final int RECIEVE_MESSAGE = 1;
@@ -51,24 +55,66 @@ public class BTActivity extends Activity {
         setContentView(R.layout.activity_bt);
         txtArduino = (TextView) findViewById(R.id.txtArduino);        // for display the received data from the Arduino
 
+        scroll = (ScrollView) findViewById(R.id.scroll);
+
+        txtArduino.setText("Ready..");
         h = new Handler() {
             public void handleMessage(android.os.Message msg) {
                 qq++;
+                int xyzIndex = 0;
+                float x, y, z;
+
                 switch (msg.what) {
                     case RECIEVE_MESSAGE:
                         byte[] readBuf = (byte[]) msg.obj;
                         String strIncom = new String(readBuf, 0, msg.arg1);
                         sb.append(strIncom);
-                        int endOfLineIndex = sb.indexOf("\r\n");
-                        if (endOfLineIndex > 0) {
-                            String sbprint = sb.substring(0, endOfLineIndex);
-                            sb.delete(0, sb.length());
-                            txtArduino.setText(sbprint);
-                            int a = Integer.parseInt(sbprint);
-                            Toast.makeText(getApplicationContext(),a,Toast.LENGTH_LONG).show();
-                        }
-                        if (qq % 1000 == 0) {
-                            Log.d(TAG, sb.toString() +  "Byte:" + msg.arg1 + "...");
+                        Log.d("hansjin", sb.toString());
+                        if (strIncom.contains("\n")) {
+
+                            String inputs = sb.toString();
+                            StringTokenizer stringTokenizer = new StringTokenizer(inputs, "\n");
+                            while(stringTokenizer.hasMoreTokens()) {
+                                xyzIndex = 0;
+                                x = -10.0f;
+                                y = -10.0f;
+                                z = -10.0f;
+
+                                String oneLine = stringTokenizer.nextToken();
+                                oneLine = oneLine.replaceAll(" ", "");
+
+                                StringTokenizer innerToken = new StringTokenizer(oneLine, ",");
+                                while(innerToken.hasMoreTokens()) {
+                                    try {
+                                        if (xyzIndex == 0) {
+                                            x = Float.parseFloat(innerToken.nextToken());
+                                        } else if (xyzIndex == 1) {
+                                            y = Float.parseFloat(innerToken.nextToken());
+                                        } else if (xyzIndex == 2) {
+                                            z = Float.parseFloat(innerToken.nextToken());
+                                        } else {
+                                            break;
+                                        }
+                                        if (x != -10.0f && y != -10.0f && z != -10.0f) {
+                                            String obj = "input : " + x + " , " + y + " , " + z;
+                                            float objValue = (float) (Math.sqrt((x*x)+(y*y)+(z*z)));
+                                            Log.d("hansjin", obj);
+                                            txtArduino.setText("sequence : " + qq+"\n" + obj + "+\n" + "value:" + objValue);
+                                        } else {
+                                            Log.d("hansjin", "parse ERROR, go to the next token");
+                                        }
+                                        xyzIndex++;
+                                    } catch (Exception e) {
+                                        Log.d("hansjin", "parse ERROR, go to the next token");
+                                    }
+                                }
+                            }
+
+
+
+
+
+                            sb = new StringBuilder();
                         }
                         break;
                 }
