@@ -18,13 +18,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.AnalysisActivity"></activity>
+        <activity android:name=".activities.AnalysisActivity" />
         <activity android:name=".activities.BTActivity" />
+        <activity android:name=".activities.GraphActivity" />
 
         <service
             android:name=".bt.MyService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
     </application>
 

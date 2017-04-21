@@ -17,34 +17,16 @@
         android:layout_height="wrap_content"
         android:text="REAL - TIME" />
     <Button
+        android:id="@+id/graph_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="GRAPH" />
+    <Button
         android:id="@+id/data_btn1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="DATA SAMPLE - 1" />
-    <Button
-        android:id="@+id/data_btn2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="DATA SAMPLE - 2" />
-    <Button
-        android:id="@+id/data_btn3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="DATA SAMPLE - 3" />
-    <Button
-        android:id="@+id/data_btn4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="DATA SAMPLE - 4" />
-    <Button
-        android:id="@+id/data_btn5"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="DATA SAMPLE - 5" />
 
 </LinearLayout>
