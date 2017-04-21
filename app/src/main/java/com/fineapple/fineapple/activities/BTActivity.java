@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +17,17 @@ import android.widget.Toast;
 
 import com.fineapple.fineapple.R;
 import com.fineapple.fineapple.bt.MyService;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,12 +40,11 @@ import java.util.UUID;
  * Created by kksd0900 on 2017. 4. 18..
  */
 
-public class BTActivity extends Activity {
+public class BTActivity extends Activity  implements OnChartValueSelectedListener {
     private static final String TAG = "bluetooth2";
 
-    TextView txtArduino;
-    ScrollView scroll;
     Handler h;
+    LineChart chart;
 
     final int RECIEVE_MESSAGE = 1;
     private BluetoothAdapter btAdapter = null;
@@ -53,14 +64,12 @@ public class BTActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bt);
-        txtArduino = (TextView) findViewById(R.id.txtArduino);        // for display the received data from the Arduino
 
-        scroll = (ScrollView) findViewById(R.id.scroll);
+        initChartView();
 
-        txtArduino.setText("Ready..");
         h = new Handler() {
             public void handleMessage(android.os.Message msg) {
-                qq++;
+
                 int xyzIndex = 0;
                 float x, y, z;
 
@@ -69,7 +78,6 @@ public class BTActivity extends Activity {
                         byte[] readBuf = (byte[]) msg.obj;
                         String strIncom = new String(readBuf, 0, msg.arg1);
                         sb.append(strIncom);
-                        Log.d("hansjin", sb.toString());
                         if (strIncom.contains("\n")) {
 
                             String inputs = sb.toString();
@@ -81,6 +89,7 @@ public class BTActivity extends Activity {
                                 z = -10.0f;
 
                                 String oneLine = stringTokenizer.nextToken();
+                                String twoLine = oneLine+"";
                                 oneLine = oneLine.replaceAll(" ", "");
 
                                 StringTokenizer innerToken = new StringTokenizer(oneLine, ",");
@@ -88,32 +97,34 @@ public class BTActivity extends Activity {
                                     try {
                                         if (xyzIndex == 0) {
                                             x = Float.parseFloat(innerToken.nextToken());
+                                            if (Math.abs(x) > 10) break;
                                         } else if (xyzIndex == 1) {
                                             y = Float.parseFloat(innerToken.nextToken());
+                                            if (Math.abs(y) > 10) break;
                                         } else if (xyzIndex == 2) {
                                             z = Float.parseFloat(innerToken.nextToken());
+                                            if (Math.abs(z) > 10) break;
                                         } else {
                                             break;
                                         }
                                         if (x != -10.0f && y != -10.0f && z != -10.0f) {
-                                            String obj = "input : " + x + " , " + y + " , " + z;
+                                            qq++;
                                             float objValue = (float) (Math.sqrt((x*x)+(y*y)+(z*z)));
-                                            Log.d("hansjin", obj);
-                                            txtArduino.setText("sequence : " + qq+"\n" + obj + "+\n" + "value:" + objValue);
+//                                            Log.d("hansjin", qq+" / " + objValue+"");
+                                            if (objValue > 100) {
+                                                Log.d("hansjin", " why " + twoLine);
+                                            }
+
+                                            addEntry(objValue);
                                         } else {
-                                            Log.d("hansjin", "parse ERROR, go to the next token");
+//                                            Log.d("hansjin", "parse ERROR, go to the next token");
                                         }
                                         xyzIndex++;
                                     } catch (Exception e) {
-                                        Log.d("hansjin", "parse ERROR, go to the next token");
+//                                        Log.d("hansjin", "parse ERROR, go to the next token");
                                     }
                                 }
                             }
-
-
-
-
-
                             sb = new StringBuilder();
                         }
                         break;
@@ -126,14 +137,123 @@ public class BTActivity extends Activity {
     }
 
 
+    private void addEntry(float value) {
+        LineData data = chart.getData();
+        if (data != null) {
+            ILineDataSet set = data.getDataSetByIndex(0);
+            // set.addEntry(...); // can be called as well
+
+            if (set == null) {
+                set = createSet();
+                data.addDataSet(set);
+            }
+
+            data.addEntry(new Entry(set.getEntryCount(), value), 0);
+            data.notifyDataChanged();
+
+            // let the chart know it's data has changed
+            chart.notifyDataSetChanged();
+
+            // limit the number of visible entries
+            chart.setVisibleXRangeMaximum(50);
+            // chart.setVisibleYRange(30, AxisDependency.LEFT);
+
+            // move to the latest entry
+            chart.moveViewToX(data.getEntryCount());
+
+            // this automatically refreshes the chart (calls invalidate())
+            // chart.moveViewTo(data.getXValCount()-7, 55f,
+            // AxisDependency.LEFT);
+        }
+    }
+
+    private LineDataSet createSet() {
+
+        LineDataSet set = new LineDataSet(null, "Dynamic Data");
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set.setColor(Color.WHITE);
+        set.setCircleColor(Color.WHITE);
+        set.setLineWidth(2f);
+        set.setCircleRadius(4f);
+        set.setFillAlpha(65);
+        set.setFillColor(ColorTemplate.getHoloBlue());
+        set.setHighLightColor(Color.WHITE);
+        set.setValueTextColor(Color.WHITE);
+        set.setValueTextSize(9f);
+        set.setDrawValues(false);
+        return set;
+    }
+
+    void initChartView() {
+        chart = (LineChart) findViewById(R.id.chart);
+        chart.setOnChartValueSelectedListener(this);
+
+        // enable description text
+        chart.getDescription().setEnabled(true);
+
+        // enable touch gestures
+        chart.setTouchEnabled(true);
+
+        // enable scaling and dragging
+        chart.setDragEnabled(true);
+        chart.setScaleEnabled(true);
+        chart.setDrawGridBackground(false);
+
+        // if disabled, scaling can be done on x- and y-axis separately
+        chart.setPinchZoom(true);
+
+        // set an alternative background color
+        chart.setBackgroundColor(Color.BLUE);
+
+        LineData data = new LineData();
+        data.setValueTextColor(Color.WHITE);
+
+        // add empty data
+        chart.setData(data);
+
+        // get the legend (only possible after setting data)
+        Legend l = chart.getLegend();
+
+        // modify the legend ...
+        l.setForm(Legend.LegendForm.LINE);
+        l.setTextColor(Color.WHITE);
+
+        XAxis xl = chart.getXAxis();
+        xl.setTextColor(Color.WHITE);
+        xl.setDrawGridLines(false);
+        xl.setAvoidFirstLastClipping(true);
+        xl.setEnabled(true);
+
+        YAxis leftAxis = chart.getAxisLeft();
+        leftAxis.setTextColor(Color.WHITE);
+        leftAxis.setAxisMaximum(50f);
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setDrawGridLines(true);
+
+        YAxis rightAxis = chart.getAxisRight();
+        rightAxis.setEnabled(false);
+    }
+
+
+
+    @Override
+    public void onValueSelected(Entry e, Highlight h) {
+        chart.centerViewToAnimated(e.getX(), e.getY(), chart.getData().getDataSetByIndex(h.getDataSetIndex()).getAxisDependency(), 500);
+    }
+
+    @Override
+    public void onNothingSelected() { }
 
 
 
 
-
-
-
-
+    /***********************
+     *
+     * BLUETOOTH MODULES...
+     * @param device
+     * @return
+     * @throws IOException
+     */
 
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
         if(Build.VERSION.SDK_INT >= 10){
@@ -195,7 +315,6 @@ public class BTActivity extends Activity {
         super.onPause();
 
         Log.d(TAG, "...In onPause()...");
-
         /**  try     {
          btSocket.close();
          } catch (IOException e2) {

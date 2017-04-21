@@ -23,11 +23,9 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 
-public class GraphActivity extends AppCompatActivity implements OnChartValueSelectedListener  {
+public class GraphActivity extends AppCompatActivity implements OnChartValueSelectedListener {
     AnalysisActivity activity;
     LineChart chart;
-    ArrayList<Entry> dateSet;
-    int size = 150;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +61,7 @@ public class GraphActivity extends AppCompatActivity implements OnChartValueSele
                     runOnUiThread(runnable);
 
                     try {
-                        Thread.sleep(25);
+                        Thread.sleep(10);
                     } catch (InterruptedException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -108,13 +106,13 @@ public class GraphActivity extends AppCompatActivity implements OnChartValueSele
 
         LineDataSet set = new LineDataSet(null, "Dynamic Data");
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set.setColor(ColorTemplate.getHoloBlue());
+        set.setColor(Color.WHITE);
         set.setCircleColor(Color.WHITE);
         set.setLineWidth(2f);
         set.setCircleRadius(4f);
         set.setFillAlpha(65);
         set.setFillColor(ColorTemplate.getHoloBlue());
-        set.setHighLightColor(Color.rgb(244, 117, 117));
+        set.setHighLightColor(Color.WHITE);
         set.setValueTextColor(Color.WHITE);
         set.setValueTextSize(9f);
         set.setDrawValues(false);
