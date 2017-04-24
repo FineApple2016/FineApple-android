@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.fineapple.fineapple.R;
 import com.fineapple.fineapple.bt.MyService;
+import com.fineapple.fineapple.data.HitObject;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -33,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
@@ -45,6 +48,7 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
 
     Handler h;
     LineChart chart;
+    LineChart lineChart;
 
     final int RECIEVE_MESSAGE = 1;
     private BluetoothAdapter btAdapter = null;
@@ -58,18 +62,24 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     private static String address = "20:16:06:29:83:05"; //HC-06 (블루투스 모듈) 의 맥어드레스 입니다
-    int qq = 0;
+
+    int limitIndex = 0;
+    boolean isLimitMode = false;
+    String limitString = "";
+    ArrayList<Float> limitArray = new ArrayList();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bt);
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_bt);
+
+        lineChart = (LineChart) findViewById(R.id.chart);
+        initLineChartView();
 
         initChartView();
 
         h = new Handler() {
             public void handleMessage(android.os.Message msg) {
-
                 int xyzIndex = 0;
                 float x, y, z;
 
@@ -78,8 +88,21 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
                         byte[] readBuf = (byte[]) msg.obj;
                         String strIncom = new String(readBuf, 0, msg.arg1);
                         sb.append(strIncom);
-                        if (strIncom.contains("\n")) {
 
+                        if (isLimitMode) {
+                            Log.d("hansjin", "index : " + limitIndex);
+                            limitString += sb.toString();
+                            if (limitArray.size() > 100) {
+                                isLimitMode = false;
+                                Log.d("hansjin", "END + " + limitString);
+                                Log.d("hansjin", "ARRAY + " + limitArray.size());
+                                Log.d("hansjin", "ARRAY + " + limitArray.toString());
+                                for (float a : limitArray) {
+                                    Log.d("hansjin", "data is " + a);
+                                }
+                            }
+                        }
+                        if (strIncom.contains("\n")) {
                             String inputs = sb.toString();
                             StringTokenizer stringTokenizer = new StringTokenizer(inputs, "\n");
                             while(stringTokenizer.hasMoreTokens()) {
@@ -89,12 +112,13 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
                                 z = -10.0f;
 
                                 String oneLine = stringTokenizer.nextToken();
-                                String twoLine = oneLine+"";
                                 oneLine = oneLine.replaceAll(" ", "");
-
                                 StringTokenizer innerToken = new StringTokenizer(oneLine, ",");
                                 while(innerToken.hasMoreTokens()) {
                                     try {
+                                        if (oneLine.length() > 16) {
+                                            break;
+                                        }
                                         if (xyzIndex == 0) {
                                             x = Float.parseFloat(innerToken.nextToken());
                                             if (Math.abs(x) > 10) break;
@@ -108,14 +132,19 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
                                             break;
                                         }
                                         if (x != -10.0f && y != -10.0f && z != -10.0f) {
-                                            qq++;
                                             float objValue = (float) (Math.sqrt((x*x)+(y*y)+(z*z)));
-//                                            Log.d("hansjin", qq+" / " + objValue+"");
-                                            if (objValue > 100) {
-                                                Log.d("hansjin", " why " + twoLine);
+                                            addEntry(objValue);
+
+                                            if (isLimitMode) {
+                                                limitArray.add(objValue);
                                             }
 
-                                            addEntry(objValue);
+                                            if (objValue > 10 && !isLimitMode) {
+                                                Log.d("hansjin", "START!!");
+                                                isLimitMode = true;
+                                                limitString = "";
+                                                limitArray = new ArrayList();
+                                            }
                                         } else {
 //                                            Log.d("hansjin", "parse ERROR, go to the next token");
                                         }
@@ -136,6 +165,9 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
         checkBTState();
     }
 
+    void showAnaly() {
+
+    }
 
     private void addEntry(float value) {
         LineData data = chart.getData();
@@ -151,14 +183,8 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
             data.addEntry(new Entry(set.getEntryCount(), value), 0);
             data.notifyDataChanged();
 
-            // let the chart know it's data has changed
             chart.notifyDataSetChanged();
-
-            // limit the number of visible entries
-            chart.setVisibleXRangeMaximum(50);
-            // chart.setVisibleYRange(30, AxisDependency.LEFT);
-
-            // move to the latest entry
+            chart.setVisibleXRangeMaximum(30);
             chart.moveViewToX(data.getEntryCount());
 
             // this automatically refreshes the chart (calls invalidate())
@@ -182,6 +208,68 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
         set.setValueTextSize(9f);
         set.setDrawValues(false);
         return set;
+    }
+
+
+    void initLineChartView() {
+        chart.setTouchEnabled(true);
+        chart.setBackgroundColor(Color.WHITE);
+        chart.animateXY(1000, 1000);
+
+        Legend l = chart.getLegend();
+        l.setForm(Legend.LegendForm.SQUARE);
+        l.setTextSize(11f);
+        l.setTextColor(Color.DKGRAY);
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        l.setDrawInside(false);
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setTextSize(10f);
+        xAxis.setTextColor(Color.DKGRAY);
+        xAxis.setDrawGridLines(false);
+        xAxis.setDrawAxisLine(false);
+    }
+
+    ArrayList<Entry> makeLineEntryData() {
+        ArrayList<Entry> set = new ArrayList();
+        int index = 0;
+
+        for (float dataItem : limitArray) {
+            set.add(new Entry(index, dataItem));
+            index++;
+        }
+        return set;
+    }
+
+
+    void setLineChartData(ArrayList<Entry> entries) {
+        LineDataSet lineDataSet;
+        if (chart.getData() != null && chart.getData().getDataSetCount() > 0) {
+            lineDataSet = (LineDataSet) chart.getData().getDataSetByIndex(0);
+            lineDataSet.setValues(entries);
+            chart.getData().notifyDataChanged();
+            chart.notifyDataSetChanged();
+        } else {
+            lineDataSet = new LineDataSet(entries, "Values");
+            lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+            lineDataSet.setColor(Color.DKGRAY);
+            lineDataSet.setCircleColor(Color.DKGRAY);
+            lineDataSet.setLineWidth(0.5f);
+            lineDataSet.setCircleRadius(2.0f);
+            lineDataSet.setFillAlpha(65);
+            lineDataSet.setFillColor(ColorTemplate.colorWithAlpha(Color.DKGRAY, 200));
+            lineDataSet.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
+            lineDataSet.setDrawCircleHole(false);
+            lineDataSet.setHighLightColor(Color.rgb(244, 117, 117));
+
+            LineData data = new LineData(lineDataSet);
+            data.setValueTextSize(12f);
+            data.setHighlightEnabled(false);
+            chart.setData(data);
+            chart.getData().notifyDataChanged();
+        }
     }
 
     void initChartView() {
@@ -226,7 +314,7 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
 
         YAxis leftAxis = chart.getAxisLeft();
         leftAxis.setTextColor(Color.WHITE);
-        leftAxis.setAxisMaximum(50f);
+        leftAxis.setAxisMaximum(30f);
         leftAxis.setAxisMinimum(0f);
         leftAxis.setDrawGridLines(true);
 
