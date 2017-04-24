@@ -47,8 +47,8 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
     private static final String TAG = "bluetooth2";
 
     Handler h;
-    LineChart chart;
-    LineChart lineChart;
+    LineChart chart, lineChart;
+    TextView resultTV;
 
     final int RECIEVE_MESSAGE = 1;
     private BluetoothAdapter btAdapter = null;
@@ -63,19 +63,19 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
 
     private static String address = "20:16:06:29:83:05"; //HC-06 (블루투스 모듈) 의 맥어드레스 입니다
 
-    int limitIndex = 0;
     boolean isLimitMode = false;
-    String limitString = "";
     ArrayList<Float> limitArray = new ArrayList();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_bt);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_bt);
 
-        lineChart = (LineChart) findViewById(R.id.chart);
+        lineChart = (LineChart) findViewById(R.id.lineChart);
+        resultTV = (TextView) findViewById(R.id.resultTV);
+
+        lineChart.setBackgroundColor(Color.argb(1, 1, 1, 1));
         initLineChartView();
-
         initChartView();
 
         h = new Handler() {
@@ -89,19 +89,6 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
                         String strIncom = new String(readBuf, 0, msg.arg1);
                         sb.append(strIncom);
 
-                        if (isLimitMode) {
-                            Log.d("hansjin", "index : " + limitIndex);
-                            limitString += sb.toString();
-                            if (limitArray.size() > 100) {
-                                isLimitMode = false;
-                                Log.d("hansjin", "END + " + limitString);
-                                Log.d("hansjin", "ARRAY + " + limitArray.size());
-                                Log.d("hansjin", "ARRAY + " + limitArray.toString());
-                                for (float a : limitArray) {
-                                    Log.d("hansjin", "data is " + a);
-                                }
-                            }
-                        }
                         if (strIncom.contains("\n")) {
                             String inputs = sb.toString();
                             StringTokenizer stringTokenizer = new StringTokenizer(inputs, "\n");
@@ -138,12 +125,28 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
                                             if (isLimitMode) {
                                                 limitArray.add(objValue);
                                             }
-
-                                            if (objValue > 10 && !isLimitMode) {
-                                                Log.d("hansjin", "START!!");
+                                            if (objValue > 11 && !isLimitMode) {
                                                 isLimitMode = true;
-                                                limitString = "";
-                                                limitArray = new ArrayList();
+                                                resultTV.setText("분석 중..");
+                                                resultTV.setTextColor(Color.RED);
+                                            }
+                                            if (isLimitMode) {
+                                                Log.d("hansjin", "...ING + " + limitArray.size());
+                                                if (limitArray.size() > 30) {
+
+                                                    showAnaly();
+
+                                                    lineChart.setBackgroundColor(Color.argb(1, 1, 1, 1));
+                                                    lineChart.getData().notifyDataChanged();
+                                                    lineChart.notifyDataSetChanged();
+                                                    Log.d("hansjin", "ARRAY + " + limitArray.toString());
+
+                                                    resultTV.setText("분석 완료\n타격 OR 헛스윙");
+                                                    resultTV.setTextColor(Color.BLACK);
+
+                                                    isLimitMode = false;
+                                                    limitArray = new ArrayList();
+                                                }
                                             }
                                         } else {
 //                                            Log.d("hansjin", "parse ERROR, go to the next token");
@@ -166,7 +169,8 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
     }
 
     void showAnaly() {
-
+        ArrayList<Entry> dataEntry = makeLineEntryData();
+        setLineChartData(dataEntry);
     }
 
     private void addEntry(float value) {
@@ -212,11 +216,12 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
 
 
     void initLineChartView() {
-        chart.setTouchEnabled(true);
-        chart.setBackgroundColor(Color.WHITE);
-        chart.animateXY(1000, 1000);
+        lineChart.setOnChartValueSelectedListener(this);
+        lineChart.setTouchEnabled(true);
+        lineChart.setBackgroundColor(Color.WHITE);
+        lineChart.animateXY(1000, 1000);
 
-        Legend l = chart.getLegend();
+        Legend l = lineChart.getLegend();
         l.setForm(Legend.LegendForm.SQUARE);
         l.setTextSize(11f);
         l.setTextColor(Color.DKGRAY);
@@ -225,7 +230,7 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
         l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
         l.setDrawInside(false);
 
-        XAxis xAxis = chart.getXAxis();
+        XAxis xAxis = lineChart.getXAxis();
         xAxis.setTextSize(10f);
         xAxis.setTextColor(Color.DKGRAY);
         xAxis.setDrawGridLines(false);
@@ -246,11 +251,11 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
 
     void setLineChartData(ArrayList<Entry> entries) {
         LineDataSet lineDataSet;
-        if (chart.getData() != null && chart.getData().getDataSetCount() > 0) {
-            lineDataSet = (LineDataSet) chart.getData().getDataSetByIndex(0);
+        if (lineChart.getData() != null && lineChart.getData().getDataSetCount() > 0) {
+            lineDataSet = (LineDataSet) lineChart.getData().getDataSetByIndex(0);
             lineDataSet.setValues(entries);
-            chart.getData().notifyDataChanged();
-            chart.notifyDataSetChanged();
+            lineChart.getData().notifyDataChanged();
+            lineChart.notifyDataSetChanged();
         } else {
             lineDataSet = new LineDataSet(entries, "Values");
             lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
@@ -267,8 +272,8 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
             LineData data = new LineData(lineDataSet);
             data.setValueTextSize(12f);
             data.setHighlightEnabled(false);
-            chart.setData(data);
-            chart.getData().notifyDataChanged();
+            lineChart.setData(data);
+            lineChart.getData().notifyDataChanged();
         }
     }
 
