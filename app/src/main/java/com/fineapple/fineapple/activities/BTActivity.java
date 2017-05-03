@@ -92,69 +92,18 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
                         if (strIncom.contains("\n")) {
                             String inputs = sb.toString();
                             StringTokenizer stringTokenizer = new StringTokenizer(inputs, "\n");
-                            while(stringTokenizer.hasMoreTokens()) {
-                                xyzIndex = 0;
-                                x = -10.0f;
-                                y = -10.0f;
-                                z = -10.0f;
 
+                            while(stringTokenizer.hasMoreTokens()) {
                                 String oneLine = stringTokenizer.nextToken();
                                 oneLine = oneLine.replaceAll(" ", "");
-                                StringTokenizer innerToken = new StringTokenizer(oneLine, ",");
-                                while(innerToken.hasMoreTokens()) {
-                                    try {
-                                        if (oneLine.length() > 16) {
-                                            break;
-                                        }
-                                        if (xyzIndex == 0) {
-                                            x = Float.parseFloat(innerToken.nextToken());
-                                            if (Math.abs(x) > 10) break;
-                                        } else if (xyzIndex == 1) {
-                                            y = Float.parseFloat(innerToken.nextToken());
-                                            if (Math.abs(y) > 10) break;
-                                        } else if (xyzIndex == 2) {
-                                            z = Float.parseFloat(innerToken.nextToken());
-                                            if (Math.abs(z) > 10) break;
-                                        } else {
-                                            break;
-                                        }
-                                        if (x != -10.0f && y != -10.0f && z != -10.0f) {
-                                            float objValue = (float) (Math.sqrt((x*x)+(y*y)+(z*z)));
-                                            addEntry(objValue);
+                                oneLine = oneLine.replaceAll("/", "");
 
-                                            if (isLimitMode) {
-                                                limitArray.add(objValue);
-                                            }
-                                            if (objValue > 11 && !isLimitMode) {
-                                                isLimitMode = true;
-                                                resultTV.setText("분석 중..");
-                                                resultTV.setTextColor(Color.RED);
-                                            }
-                                            if (isLimitMode) {
-                                                Log.d("hansjin", "...ING + " + limitArray.size());
-                                                if (limitArray.size() > 30) {
+                                try {
 
-                                                    showAnaly();
+                                    float objValue = Float.parseFloat(oneLine);
+                                    addEntry(objValue);
+                                } catch (Exception e ) {
 
-                                                    lineChart.setBackgroundColor(Color.argb(1, 1, 1, 1));
-                                                    lineChart.getData().notifyDataChanged();
-                                                    lineChart.notifyDataSetChanged();
-                                                    Log.d("hansjin", "ARRAY + " + limitArray.toString());
-
-                                                    resultTV.setText("분석 완료\n타격 OR 헛스윙");
-                                                    resultTV.setTextColor(Color.BLACK);
-
-                                                    isLimitMode = false;
-                                                    limitArray = new ArrayList();
-                                                }
-                                            }
-                                        } else {
-//                                            Log.d("hansjin", "parse ERROR, go to the next token");
-                                        }
-                                        xyzIndex++;
-                                    } catch (Exception e) {
-//                                        Log.d("hansjin", "parse ERROR, go to the next token");
-                                    }
                                 }
                             }
                             sb = new StringBuilder();
