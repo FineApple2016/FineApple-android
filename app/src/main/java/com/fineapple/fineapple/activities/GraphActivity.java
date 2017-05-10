@@ -56,17 +56,17 @@ public class GraphActivity extends AppCompatActivity implements OnChartValueSele
             @Override
             public void run() {
                 Log.d("hansjin", "running..");
-                for (int i = 0; i < 1000; i++) {
-                    // Don't generate garbage runnables inside the loop.
-                    runOnUiThread(runnable);
-
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
+//                for (int i = 0; i < 1000; i++) {
+//                    // Don't generate garbage runnables inside the loop.
+//                    runOnUiThread(runnable);
+//
+//                    try {
+//                        Thread.sleep(10);
+//                    } catch (InterruptedException e) {
+//                        // TODO Auto-generated catch block
+//                        e.printStackTrace();
+//                    }
+//                }
             }
         });
         thread.start();

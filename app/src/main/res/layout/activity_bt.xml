@@ -42,7 +42,7 @@
                 android:layout_height="match_parent"
                 android:background="#FFEEFF"
                 android:text="분석 결과"
-                android:textSize="50sp"
+                android:textSize="30sp"
                 android:layout_gravity="center"
                 android:gravity="center"/>
         </LinearLayout>

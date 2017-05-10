@@ -19,7 +19,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.AnalysisActivity" />
-        <activity android:name=".activities.BTActivity" />
+        <activity android:name=".activities.BTActivity" >
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".activities.GraphActivity" />
 
         <service

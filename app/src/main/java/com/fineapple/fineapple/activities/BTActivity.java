@@ -11,14 +11,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fineapple.fineapple.R;
 import com.fineapple.fineapple.bt.MyService;
-import com.fineapple.fineapple.data.HitObject;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -43,10 +40,10 @@ import java.util.UUID;
  * Created by kksd0900 on 2017. 4. 18..
  */
 
-public class BTActivity extends Activity  implements OnChartValueSelectedListener {
+public class BTActivity extends Activity implements OnChartValueSelectedListener {
     private static final String TAG = "bluetooth2";
 
-    Handler h;
+    Handler handler;
     LineChart chart, lineChart;
     TextView resultTV;
 
@@ -66,6 +63,14 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
     boolean isLimitMode = false;
     ArrayList<Float> limitArray = new ArrayList();
 
+    int totalCount = 0;
+    int successCount = 0;
+    int errorFormat = 0;
+    int errorCasting = 0;
+    int parseErrorCount = 0;
+
+    float temp = 0.0f;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,37 +83,65 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
         initLineChartView();
         initChartView();
 
-        h = new Handler() {
+        handler = new Handler() {
             public void handleMessage(android.os.Message msg) {
-                int xyzIndex = 0;
-                float x, y, z;
-
                 switch (msg.what) {
                     case RECIEVE_MESSAGE:
                         byte[] readBuf = (byte[]) msg.obj;
                         String strIncom = new String(readBuf, 0, msg.arg1);
                         sb.append(strIncom);
 
-                        if (strIncom.contains("\n")) {
+                        if (sb.toString().charAt(sb.toString().length()-1) == '/') {
                             String inputs = sb.toString();
-                            StringTokenizer stringTokenizer = new StringTokenizer(inputs, "\n");
-
-                            while(stringTokenizer.hasMoreTokens()) {
-                                String oneLine = stringTokenizer.nextToken();
-                                oneLine = oneLine.replaceAll(" ", "");
-                                oneLine = oneLine.replaceAll("/", "");
-
-                                try {
-
-                                    float objValue = Float.parseFloat(oneLine);
-                                    addEntry(objValue);
-                                } catch (Exception e ) {
-
-                                }
-                            }
                             sb = new StringBuilder();
+//                            Log.d("hansjin", inputs);
+                            inputs = inputs.replaceAll(" ", "");
+
+                            StringTokenizer stringTokenizer = new StringTokenizer(inputs, "/");
+                            while(stringTokenizer.hasMoreTokens()) {
+                                String token = stringTokenizer.nextToken();
+
+                                int countChar = 0;
+
+                                for (int i=0; i<token.length(); i++) {
+                                    if (token.charAt(i) == '.') {
+                                        countChar++;
+                                    }
+                                }
+
+                                if (countChar == 1) {
+                                    try {
+                                        float value = Float.parseFloat(token);
+
+                                        if (totalCount == 0) {
+                                            temp = value;
+                                        }
+
+                                        // 튀는 값
+//                                        if ((temp+1.0f)*4 < value || value < 0.1) {
+////                                            Log.d("hansjin", "ERROR : " + token + "/ temp - " + temp+"");
+//                                            parseErrorCount++;
+//                                            continue;
+//                                        }
+
+                                        addEntry(value);
+                                        temp = value;
+                                        successCount++;
+                                    } catch (Exception e) {
+                                        errorCasting++;
+                                        Log.d("hansjin", "errorCasting : " + token);
+                                    }
+                                } else {
+                                    errorFormat++;
+                                    Log.d("hansjin", "errorFormat : " + token);
+                                }
+                                totalCount++;
+                            }
+                            resultTV.setText("Total:"+totalCount +
+                                    "\nOK:" + successCount +
+                                    "\nPARSE ERROR:" + errorFormat +
+                                    "\nCAST ERROR:" + errorCasting);
                         }
-                        break;
                 }
             }
         };
@@ -137,7 +170,8 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
             data.notifyDataChanged();
 
             chart.notifyDataSetChanged();
-            chart.setVisibleXRangeMaximum(30);
+            // wide
+            chart.setVisibleXRangeMaximum(200);
             chart.moveViewToX(data.getEntryCount());
 
             // this automatically refreshes the chart (calls invalidate())
@@ -147,13 +181,12 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
     }
 
     private LineDataSet createSet() {
-
         LineDataSet set = new LineDataSet(null, "Dynamic Data");
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         set.setColor(Color.WHITE);
         set.setCircleColor(Color.WHITE);
         set.setLineWidth(2f);
-        set.setCircleRadius(4f);
+        set.setCircleRadius(2.5f);
         set.setFillAlpha(65);
         set.setFillColor(ColorTemplate.getHoloBlue());
         set.setHighLightColor(Color.WHITE);
@@ -268,7 +301,7 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
 
         YAxis leftAxis = chart.getAxisLeft();
         leftAxis.setTextColor(Color.WHITE);
-        leftAxis.setAxisMaximum(30f);
+        leftAxis.setAxisMaximum(12f);
         leftAxis.setAxisMinimum(0f);
         leftAxis.setDrawGridLines(true);
 
@@ -407,7 +440,7 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
         }
 
         public void run() {
-            byte[] buffer = new byte[256];  // buffer store for the stream
+            byte[] buffer = new byte[1024];  // buffer store for the stream
             int bytes; // bytes returned from read()
 
             // Keep listening to the InputStream until an exception occurs
@@ -415,8 +448,9 @@ public class BTActivity extends Activity  implements OnChartValueSelectedListene
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);		// Get number of bytes and message in "buffer"
-                    h.obtainMessage(RECIEVE_MESSAGE, bytes, -1, buffer).sendToTarget();		// Send to message queue Handler
-                } catch (IOException e) {
+                    handler.obtainMessage(RECIEVE_MESSAGE, bytes, -1, buffer).sendToTarget();		// Send to message queue Handler
+                    sleep(40);
+                } catch (Exception e) {
                     break;
                 }
             }
