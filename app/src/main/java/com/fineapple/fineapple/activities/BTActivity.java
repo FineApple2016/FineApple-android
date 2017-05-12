@@ -11,6 +11,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +48,7 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
     Handler handler;
     LineChart chart, lineChart;
     TextView resultTV;
+    Button btn_hit, btn_swing;
 
     final int RECIEVE_MESSAGE = 1;
     private BluetoothAdapter btAdapter = null;
@@ -62,24 +65,38 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
 
     boolean isLimitMode = false;
     ArrayList<Float> limitArray = new ArrayList();
+    int sizeOfLimit = 160;
+    int streamOfLimit = 0;
 
     int totalCount = 0;
     int successCount = 0;
     int errorFormat = 0;
     int errorCasting = 0;
-    int parseErrorCount = 0;
-
-    float temp = 0.0f;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bt);
 
-        lineChart = (LineChart) findViewById(R.id.lineChart);
         resultTV = (TextView) findViewById(R.id.resultTV);
 
-        lineChart.setBackgroundColor(Color.argb(1, 1, 1, 1));
+        btn_hit = (Button) findViewById(R.id.btn_hit);
+        btn_hit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btn_hit.setBackgroundColor(Color.CYAN);
+                btn_swing.setBackgroundColor(Color.WHITE);
+            }
+        });
+        btn_swing = (Button) findViewById(R.id.btn_swing);
+        btn_swing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btn_hit.setBackgroundColor(Color.WHITE);
+                btn_swing.setBackgroundColor(Color.CYAN);
+            }
+        });
+
         initLineChartView();
         initChartView();
 
@@ -108,25 +125,38 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
                                         countChar++;
                                     }
                                 }
-
                                 if (countChar == 1) {
                                     try {
                                         float value = Float.parseFloat(token);
-
-                                        if (totalCount == 0) {
-                                            temp = value;
-                                        }
-
-                                        // 튀는 값
-//                                        if ((temp+1.0f)*4 < value || value < 0.1) {
-////                                            Log.d("hansjin", "ERROR : " + token + "/ temp - " + temp+"");
-//                                            parseErrorCount++;
-//                                            continue;
-//                                        }
-
                                         addEntry(value);
-                                        temp = value;
                                         successCount++;
+
+
+                                        // LINE ANAL CHART
+                                        limitArray.add(value);
+                                        if (limitArray.size() > sizeOfLimit) {
+                                            limitArray.remove(0);
+                                        }
+                                        if (!isLimitMode && value > 9.0f) {
+                                            isLimitMode = true;
+                                        }
+                                        if (isLimitMode) {
+                                            if (streamOfLimit > sizeOfLimit*0.7) {
+                                                streamOfLimit = 0;
+                                                isLimitMode = false;
+
+                                                ArrayList<Float> lineData = new ArrayList();
+                                                for (float a : limitArray) {
+                                                    lineData.add(a);
+                                                }
+                                                Log.d("hansjin", "LIMIT = " + lineData.get(0));
+                                                setLineChartData(makeLineEntryData(lineData));
+
+                                                limitArray.clear();
+                                                limitArray = new ArrayList();
+                                            }
+                                            streamOfLimit++;
+                                        }
                                     } catch (Exception e) {
                                         errorCasting++;
                                         Log.d("hansjin", "errorCasting : " + token);
@@ -148,11 +178,6 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();        // get Bluetooth adapter
         checkBTState();
-    }
-
-    void showAnaly() {
-        ArrayList<Entry> dataEntry = makeLineEntryData();
-        setLineChartData(dataEntry);
     }
 
     private void addEntry(float value) {
@@ -198,6 +223,9 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
 
 
     void initLineChartView() {
+        lineChart = (LineChart) findViewById(R.id.lineChart);
+        lineChart.setBackgroundColor(Color.argb(1, 1, 1, 1));
+
         lineChart.setOnChartValueSelectedListener(this);
         lineChart.setTouchEnabled(true);
         lineChart.setBackgroundColor(Color.WHITE);
@@ -219,11 +247,11 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
         xAxis.setDrawAxisLine(false);
     }
 
-    ArrayList<Entry> makeLineEntryData() {
+    ArrayList<Entry> makeLineEntryData(ArrayList<Float> list) {
         ArrayList<Entry> set = new ArrayList();
         int index = 0;
 
-        for (float dataItem : limitArray) {
+        for (float dataItem : list) {
             set.add(new Entry(index, dataItem));
             index++;
         }
@@ -232,6 +260,7 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
 
 
     void setLineChartData(ArrayList<Entry> entries) {
+
         LineDataSet lineDataSet;
         if (lineChart.getData() != null && lineChart.getData().getDataSetCount() > 0) {
             lineDataSet = (LineDataSet) lineChart.getData().getDataSetByIndex(0);
@@ -257,6 +286,7 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
             lineChart.setData(data);
             lineChart.getData().notifyDataChanged();
         }
+        lineChart.invalidate();
     }
 
     void initChartView() {
@@ -301,7 +331,7 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
 
         YAxis leftAxis = chart.getAxisLeft();
         leftAxis.setTextColor(Color.WHITE);
-        leftAxis.setAxisMaximum(12f);
+        leftAxis.setAxisMaximum(20f);
         leftAxis.setAxisMinimum(0f);
         leftAxis.setDrawGridLines(true);
 
@@ -449,7 +479,7 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);		// Get number of bytes and message in "buffer"
                     handler.obtainMessage(RECIEVE_MESSAGE, bytes, -1, buffer).sendToTarget();		// Send to message queue Handler
-                    sleep(40);
+                    sleep(50);
                 } catch (Exception e) {
                     break;
                 }

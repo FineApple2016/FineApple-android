@@ -8,26 +8,56 @@
         android:id="@+id/chart"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="2" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="3"
         android:background="#FFFFFF"
         android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:layout_height="match_parent"
-            android:background="#FFFFFF">
+            android:background="#FFFFFF"
+            android:orientation="vertical">
 
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/lineChart"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"/>
+                android:orientation="vertical">
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/lineChart"
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="0dp"
+                    android:background="#FFFFFF"
+                    android:layout_margin="20dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center"
+                    android:gravity="center">
+                    <Button
+                        android:id="@+id/btn_hit"
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:text="타격"
+                        android:background="#FFFFFF"/>
+                    <Button
+                        android:id="@+id/btn_swing"
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="20dp"
+                        android:text="헛스윙"
+                        android:background="#FFFFFF"/>
+                </LinearLayout>
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -42,7 +72,7 @@
                 android:layout_height="match_parent"
                 android:background="#FFEEFF"
                 android:text="분석 결과"
-                android:textSize="30sp"
+                android:textSize="18sp"
                 android:layout_gravity="center"
                 android:gravity="center"/>
         </LinearLayout>
