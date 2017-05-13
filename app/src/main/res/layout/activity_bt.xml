@@ -7,7 +7,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_weight="3"
         android:orientation="horizontal"
         android:paddingTop="10dp"
         android:paddingBottom="20dp"
@@ -43,11 +43,12 @@
             android:id="@+id/resultTV"
             android:layout_width="200dp"
             android:layout_height="match_parent"
-            android:background="#DDDDDD"
-            android:text="분석 결과"
-            android:textSize="18sp"
+            android:background="#FFFFFF"
+            android:text="receiving data.. "
+            android:textSize="16sp"
             android:layout_gravity="left|top"
             android:gravity="left|top"
+            android:layout_marginLeft="12dp"
             android:paddingLeft="16dp"
             android:paddingTop="16dp"
             android:textColor="#333333"/>
@@ -57,7 +58,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
+        android:layout_weight="5"
         android:background="#FFFFFF"
         android:orientation="horizontal">
 
@@ -101,7 +102,23 @@
                         <com.github.mikephil.charting.charts.LineChart
                             android:id="@+id/lineChart"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"/>
+                            android:layout_height="0dp"
+                            android:layout_weight="1"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="12dp"
+                            android:background="#DDDDDD">
+
+                        </LinearLayout>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="80dp"
+                            android:layout_marginLeft="20dp"
+                            android:background="#FFFFFF"
+                            android:text="SOME RESULT..">
+
+                        </TextView>
 
                     </LinearLayout>
 
@@ -144,7 +161,10 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:paddingRight="20dp"
+            android:paddingBottom="12dp"
+            android:background="#DDDDDD">
 
             <TextView
                 android:layout_width="match_parent"
@@ -154,6 +174,7 @@
                 android:textSize="18sp"
                 android:layout_gravity="center"
                 android:gravity="center"/>
+
         </LinearLayout>
 
     </LinearLayout>

@@ -65,7 +65,7 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
 
     boolean isLimitMode = false;
     ArrayList<Float> limitArray = new ArrayList();
-    int sizeOfLimit = 160;
+    int sizeOfLimit = 150;
     int streamOfLimit = 0;
 
     int totalCount = 0;
@@ -84,20 +84,14 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
         btn_hit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btn_hit.setBackgroundColor(Color.rgb(255, 65, 129));
-                btn_hit.setTextColor(Color.WHITE);
-                btn_swing.setBackgroundColor(Color.WHITE);
-                btn_swing.setTextColor(Color.BLACK);
+                setResultHIT();
             }
         });
         btn_swing = (Button) findViewById(R.id.btn_swing);
         btn_swing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btn_hit.setBackgroundColor(Color.WHITE);
-                btn_hit.setTextColor(Color.BLACK);
-                btn_swing.setBackgroundColor(Color.rgb(255, 65, 129));
-                btn_swing.setTextColor(Color.WHITE);
+                setResultSwing();
             }
         });
 
@@ -145,7 +139,7 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
                                             isLimitMode = true;
                                         }
                                         if (isLimitMode) {
-                                            if (streamOfLimit > sizeOfLimit*0.7) {
+                                            if (streamOfLimit > 100) {
                                                 streamOfLimit = 0;
                                                 isLimitMode = false;
 
@@ -184,6 +178,20 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();        // get Bluetooth adapter
         checkBTState();
+    }
+
+    void setResultHIT() {
+        btn_hit.setBackgroundColor(Color.rgb(255, 65, 129));
+        btn_hit.setTextColor(Color.WHITE);
+        btn_swing.setBackgroundColor(Color.WHITE);
+        btn_swing.setTextColor(Color.BLACK);
+    }
+
+    void setResultSwing() {
+        btn_hit.setBackgroundColor(Color.WHITE);
+        btn_hit.setTextColor(Color.BLACK);
+        btn_swing.setBackgroundColor(Color.rgb(255, 65, 129));
+        btn_swing.setTextColor(Color.WHITE);
     }
 
     private void addEntry(float value) {
@@ -237,6 +245,7 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
         lineChart.setTouchEnabled(true);
         lineChart.setBackgroundColor(Color.WHITE);
         lineChart.animateXY(1000, 1000);
+        lineChart.getDescription().setEnabled(false);
 
         Legend l = lineChart.getLegend();
         l.setForm(Legend.LegendForm.SQUARE);
@@ -274,7 +283,7 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
             lineChart.getData().notifyDataChanged();
             lineChart.notifyDataSetChanged();
         } else {
-            lineDataSet = new LineDataSet(entries, "Values");
+            lineDataSet = new LineDataSet(entries, "SVM Values");
             lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
             lineDataSet.setColor(Color.DKGRAY);
             lineDataSet.setCircleColor(Color.DKGRAY);
