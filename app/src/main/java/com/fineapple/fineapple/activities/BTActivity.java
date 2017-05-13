@@ -84,8 +84,10 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
         btn_hit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btn_hit.setBackgroundColor(Color.CYAN);
+                btn_hit.setBackgroundColor(Color.rgb(255, 65, 129));
+                btn_hit.setTextColor(Color.WHITE);
                 btn_swing.setBackgroundColor(Color.WHITE);
+                btn_swing.setTextColor(Color.BLACK);
             }
         });
         btn_swing = (Button) findViewById(R.id.btn_swing);
@@ -93,7 +95,9 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
             @Override
             public void onClick(View v) {
                 btn_hit.setBackgroundColor(Color.WHITE);
-                btn_swing.setBackgroundColor(Color.CYAN);
+                btn_hit.setTextColor(Color.BLACK);
+                btn_swing.setBackgroundColor(Color.rgb(255, 65, 129));
+                btn_swing.setTextColor(Color.WHITE);
             }
         });
 
@@ -167,10 +171,12 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
                                 }
                                 totalCount++;
                             }
-                            resultTV.setText("Total:"+totalCount +
-                                    "\nOK:" + successCount +
-                                    "\nPARSE ERROR:" + errorFormat +
-                                    "\nCAST ERROR:" + errorCasting);
+                            resultTV.setText(
+                                    "receiving data.. " +
+                                    "\n\nTotal:\t"+totalCount +
+                                    "\nSuccess:\t" + successCount +
+                                    "\nERROR(PARSE): " + errorFormat +
+                                    "\nERROR(CAST): " + errorCasting);
                         }
                 }
             }
@@ -205,17 +211,18 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
         }
     }
 
+    int lineColor = Color.rgb(80,80,80);
     private LineDataSet createSet() {
-        LineDataSet set = new LineDataSet(null, "Dynamic Data");
+        LineDataSet set = new LineDataSet(null, "SVM values");
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set.setColor(Color.WHITE);
-        set.setCircleColor(Color.WHITE);
+        set.setColor(lineColor);
+        set.setCircleColor(lineColor);
         set.setLineWidth(2f);
-        set.setCircleRadius(2.5f);
+        set.setCircleRadius(1.5f);
         set.setFillAlpha(65);
         set.setFillColor(ColorTemplate.getHoloBlue());
-        set.setHighLightColor(Color.WHITE);
-        set.setValueTextColor(Color.WHITE);
+        set.setHighLightColor(lineColor);
+        set.setValueTextColor(lineColor);
         set.setValueTextSize(9f);
         set.setDrawValues(false);
         return set;
@@ -260,7 +267,6 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
 
 
     void setLineChartData(ArrayList<Entry> entries) {
-
         LineDataSet lineDataSet;
         if (lineChart.getData() != null && lineChart.getData().getDataSetCount() > 0) {
             lineDataSet = (LineDataSet) lineChart.getData().getDataSetByIndex(0);
@@ -294,7 +300,7 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
         chart.setOnChartValueSelectedListener(this);
 
         // enable description text
-        chart.getDescription().setEnabled(true);
+        chart.getDescription().setEnabled(false);
 
         // enable touch gestures
         chart.setTouchEnabled(true);
@@ -308,10 +314,10 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
         chart.setPinchZoom(true);
 
         // set an alternative background color
-        chart.setBackgroundColor(Color.BLUE);
+        chart.setBackgroundColor(Color.WHITE);
 
         LineData data = new LineData();
-        data.setValueTextColor(Color.WHITE);
+        data.setValueTextColor(lineColor);
 
         // add empty data
         chart.setData(data);
@@ -321,16 +327,16 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
 
         // modify the legend ...
         l.setForm(Legend.LegendForm.LINE);
-        l.setTextColor(Color.WHITE);
+        l.setTextColor(lineColor);
 
         XAxis xl = chart.getXAxis();
-        xl.setTextColor(Color.WHITE);
+        xl.setTextColor(lineColor);
         xl.setDrawGridLines(false);
         xl.setAvoidFirstLastClipping(true);
         xl.setEnabled(true);
 
         YAxis leftAxis = chart.getAxisLeft();
-        leftAxis.setTextColor(Color.WHITE);
+        leftAxis.setTextColor(lineColor);
         leftAxis.setAxisMaximum(20f);
         leftAxis.setAxisMinimum(0f);
         leftAxis.setDrawGridLines(true);

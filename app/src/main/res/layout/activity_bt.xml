@@ -4,11 +4,55 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chart"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2" />
+        android:layout_weight="2"
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        android:paddingBottom="20dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:background="#DDDDDD">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="#FFFFFF">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="실시간 SVM 그래프"
+                android:textColor="#444444"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginLeft="20dp"
+                android:textStyle="bold"/>
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/chart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/resultTV"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:background="#DDDDDD"
+            android:text="분석 결과"
+            android:textSize="18sp"
+            android:layout_gravity="left|top"
+            android:gravity="left|top"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:textColor="#333333"/>
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,7 +65,7 @@
             android:layout_width="0dp"
             android:layout_weight="2"
             android:layout_height="match_parent"
-            android:background="#FFFFFF"
+            android:background="#DDDDDD"
             android:orientation="vertical">
 
             <LinearLayout
@@ -29,35 +73,71 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <com.github.mikephil.charting.charts.LineChart
-                    android:id="@+id/lineChart"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_weight="1"
                     android:layout_height="0dp"
-                    android:background="#FFFFFF"
-                    android:layout_margin="20dp"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="70dp"
                     android:orientation="horizontal"
-                    android:layout_gravity="center"
-                    android:gravity="center">
-                    <Button
-                        android:id="@+id/btn_hit"
+                    android:layout_marginBottom="12dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:background="#FFFFFF"
+                        android:orientation="vertical"
+                        android:layout_marginLeft="20dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="타격 분석 그래프"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="12dp"
+                            android:textColor="#444444"
+                            android:textStyle="bold"/>
+
+                        <com.github.mikephil.charting.charts.LineChart
+                            android:id="@+id/lineChart"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:layout_width="100dp"
-                        android:layout_height="50dp"
-                        android:text="타격"
-                        android:background="#FFFFFF"/>
-                    <Button
-                        android:id="@+id/btn_swing"
-                        android:layout_width="100dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="20dp"
-                        android:text="헛스윙"
-                        android:background="#FFFFFF"/>
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:layout_gravity="left|center_vertical"
+                        android:gravity="left|center_vertical"
+                        android:layout_marginLeft="12dp"
+                        android:layout_marginRight="12dp">
+                        <Button
+                            android:id="@+id/btn_hit"
+                            android:layout_width="100dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:text="타격"
+                            android:textColor="#000000"
+                            android:background="#FFFFFF"
+                            android:layout_marginBottom="6dp"/>
+                        <Button
+                            android:id="@+id/btn_swing"
+                            android:layout_width="100dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_marginTop="6dp"
+                            android:text="헛스윙"
+                            android:background="@color/colorAccent"
+                            android:textColor="#FFFFFF"/>
+                    </LinearLayout>
+
                 </LinearLayout>
+
             </LinearLayout>
+
+
 
         </LinearLayout>
 
@@ -67,7 +147,6 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/resultTV"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#FFEEFF"
