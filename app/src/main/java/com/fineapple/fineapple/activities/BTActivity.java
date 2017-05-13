@@ -60,7 +60,6 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
 
     // SPP UUID service
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-
     private static String address = "20:16:06:29:83:05"; //HC-06 (블루투스 모듈) 의 맥어드레스 입니다
 
     boolean isLimitMode = false;
@@ -72,6 +71,8 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
     int successCount = 0;
     int errorFormat = 0;
     int errorCasting = 0;
+
+    HitAnalyzer analyzer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -97,6 +98,8 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
 
         initLineChartView();
         initChartView();
+
+        analyzer = new HitAnalyzer(getApplicationContext(), this);
 
         handler = new Handler() {
             public void handleMessage(android.os.Message msg) {
@@ -129,8 +132,7 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
                                         addEntry(value);
                                         successCount++;
 
-
-                                        // LINE ANAL CHART
+                                        // 타격 분석
                                         limitArray.add(value);
                                         if (limitArray.size() > sizeOfLimit) {
                                             limitArray.remove(0);
