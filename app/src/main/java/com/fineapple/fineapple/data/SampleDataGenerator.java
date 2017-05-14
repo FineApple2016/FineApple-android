@@ -1,10 +1,8 @@
 package com.fineapple.fineapple.data;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.fineapple.fineapple.R;
-import com.fineapple.fineapple.activities.AnalysisActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;

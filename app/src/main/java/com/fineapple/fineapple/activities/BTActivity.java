@@ -47,7 +47,7 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
 
     Handler handler;
     LineChart chart, lineChart;
-    TextView resultTV;
+    TextView resultTV, logTV, hitTV;
     Button btn_hit, btn_swing;
 
     final int RECIEVE_MESSAGE = 1;
@@ -66,6 +66,7 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
     ArrayList<Float> limitArray = new ArrayList();
     int sizeOfLimit = 150;
     int streamOfLimit = 0;
+    float sensitivity = 6.0f;
 
     int totalCount = 0;
     int successCount = 0;
@@ -80,6 +81,8 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
         setContentView(R.layout.activity_bt);
 
         resultTV = (TextView) findViewById(R.id.resultTV);
+        logTV = (TextView) findViewById(R.id.log_tv);
+        hitTV = (TextView) findViewById(R.id.hit_tv);
 
         btn_hit = (Button) findViewById(R.id.btn_hit);
         btn_hit.setOnClickListener(new View.OnClickListener() {
@@ -137,7 +140,7 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
                                         if (limitArray.size() > sizeOfLimit) {
                                             limitArray.remove(0);
                                         }
-                                        if (!isLimitMode && value > 9.0f) {
+                                        if (!isLimitMode && value > sensitivity) {
                                             isLimitMode = true;
                                         }
                                         if (isLimitMode) {
@@ -145,12 +148,13 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
                                                 streamOfLimit = 0;
                                                 isLimitMode = false;
 
-                                                ArrayList<Float> lineData = new ArrayList();
+                                                ArrayList<Float> analysisData = new ArrayList();
                                                 for (float a : limitArray) {
-                                                    lineData.add(a);
+                                                    analysisData.add(a);
                                                 }
-                                                Log.d("hansjin", "LIMIT = " + lineData.get(0));
-                                                setLineChartData(makeLineEntryData(lineData));
+                                                analyzer.analysis(analysisData, logTV, hitTV);
+                                                Log.d("hansjin", "LIMIT = " + analysisData.get(0));
+                                                setLineChartData(makeLineEntryData(analysisData));
 
                                                 limitArray.clear();
                                                 limitArray = new ArrayList();
@@ -163,7 +167,7 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
                                     }
                                 } else {
                                     errorFormat++;
-                                    Log.d("hansjin", "errorFormat : " + token);
+//                                    Log.d("hansjin", "errorFormat : " + token);
                                 }
                                 totalCount++;
                             }

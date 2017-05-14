@@ -1,4 +1,4 @@
-package com.fineapple.fineapple.activities;
+package com.fineapple.fineapple.others;
 
 import android.graphics.Color;
 import android.graphics.DashPathEffect;

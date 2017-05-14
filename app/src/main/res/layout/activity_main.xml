@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="com.fineapple.fineapple.activities.MainActivity">
+    tools:context="com.fineapple.fineapple.others.MainActivity">
 
     <Button
         android:id="@+id/real_time"

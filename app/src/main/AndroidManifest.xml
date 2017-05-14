@@ -11,20 +11,15 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".activities.AnalysisActivity" />
+        <activity android:name=".others.MainActivity"/>
+        <activity android:name=".others.AnalysisActivity" />
         <activity android:name=".activities.BTActivity" >
             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.GraphActivity" />
+        <activity android:name=".others.GraphActivity" />
 
         <service
             android:name=".bt.MyService"

@@ -111,14 +111,33 @@
                             android:background="#DDDDDD">
 
                         </LinearLayout>
+
                         <TextView
+                            android:id="@+id/log_tv"
                             android:layout_width="match_parent"
-                            android:layout_height="80dp"
+                            android:layout_height="34dp"
+                            android:paddingTop="6dp"
                             android:layout_marginLeft="20dp"
                             android:background="#FFFFFF"
-                            android:text="SOME RESULT..">
+                            android:text="SOME RESULT.."
+                            android:textSize="8.7sp" />
 
-                        </TextView>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="12dp"
+                            android:background="#DDDDDD">
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/hit_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:paddingTop="6dp"
+                            android:layout_marginLeft="20dp"
+                            android:background="#FFFFFF"
+                            android:text="SOME RESULT.."
+                            android:textColor="#333333"
+                            android:textSize="14sp" />
 
                     </LinearLayout>
 
@@ -159,7 +178,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="215dp"
+            android:layout_width="255dp"
             android:layout_height="match_parent"
             android:paddingRight="20dp"
             android:paddingBottom="12dp"

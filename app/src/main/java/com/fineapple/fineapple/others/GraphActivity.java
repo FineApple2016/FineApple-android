@@ -1,14 +1,11 @@
-package com.fineapple.fineapple.activities;
+package com.fineapple.fineapple.others;
 
 import android.graphics.Color;
-import android.graphics.DashPathEffect;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.fineapple.fineapple.R;
-import com.fineapple.fineapple.data.HitObject;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -20,8 +17,6 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
-
-import java.util.ArrayList;
 
 public class GraphActivity extends AppCompatActivity implements OnChartValueSelectedListener {
     AnalysisActivity activity;

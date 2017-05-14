@@ -5,7 +5,7 @@
     android:id="@+id/activity_graph"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.fineapple.fineapple.activities.GraphActivity">
+    tools:context="com.fineapple.fineapple.others.GraphActivity">
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
