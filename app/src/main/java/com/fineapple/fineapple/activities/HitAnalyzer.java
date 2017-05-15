@@ -2,7 +2,9 @@ package com.fineapple.fineapple.activities;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -24,17 +26,17 @@ public class HitAnalyzer {
         this.activity = activity;
     }
 
-    public void analysis(ArrayList<Float> data, TextView resultTV, TextView hitTV) {
+    public void analysis(ArrayList<Float> data, TextView resultTV, TextView hitTV, Button btn_hit, Button btn_swing) {
         if (data == null || data.size() == 0) {
             resultTV.setText("ERROR");
             return;
         }
         ArrayList<Integer> vectors = transformToVectors(data);
-        int hitIndex = isHit(data, vectors, hitTV);
+        int hitIndex = isHit(data, vectors, hitTV, btn_hit, btn_swing);
         resultTV.setText(vectorsToString(vectors, hitIndex));
     }
 
-    int isHit(ArrayList<Float> data, ArrayList<Integer> vectors, TextView hitTV) {
+    int isHit(ArrayList<Float> data, ArrayList<Integer> vectors, TextView hitTV, Button btn_hit, Button btn_swing) {
         /*
             vector= 0 // 감소
                     1 // 변화 없음
@@ -72,6 +74,15 @@ public class HitAnalyzer {
         hitTV.setText("진동 발생 인덱스 : " + indexOfMaxIntervalSize +
                 ", 진동수 : " + maxCountChangeVector +
                 ", 총 진동값 : " + totalDifference);
+
+        if (indexOfMaxIntervalSize > 50 &&
+                indexOfMaxIntervalSize < 70 &&
+                maxCountChangeVector > 3 &&
+                totalDifference > 10.0) {
+            setHit(btn_hit, btn_swing);
+        } else {
+            setSwing(btn_hit, btn_swing);
+        }
 
         return indexOfMaxIntervalSize;
     }
@@ -115,5 +126,19 @@ public class HitAnalyzer {
             }
         }
         return str += "]";
+    }
+
+    void setHit(Button btn_hit, Button btn_swing) {
+        btn_hit.setBackgroundColor(Color.rgb(255, 65, 129));
+        btn_hit.setTextColor(Color.WHITE);
+        btn_swing.setBackgroundColor(Color.WHITE);
+        btn_swing.setTextColor(Color.BLACK);
+    }
+
+    void setSwing(Button btn_hit, Button btn_swing) {
+        btn_hit.setBackgroundColor(Color.WHITE);
+        btn_hit.setTextColor(Color.BLACK);
+        btn_swing.setBackgroundColor(Color.rgb(255, 65, 129));
+        btn_swing.setTextColor(Color.WHITE);
     }
 }

@@ -152,7 +152,7 @@ public class BTActivity extends Activity implements OnChartValueSelectedListener
                                                 for (float a : limitArray) {
                                                     analysisData.add(a);
                                                 }
-                                                analyzer.analysis(analysisData, logTV, hitTV);
+                                                analyzer.analysis(analysisData, logTV, hitTV, btn_hit, btn_swing);
                                                 Log.d("hansjin", "LIMIT = " + analysisData.get(0));
                                                 setLineChartData(makeLineEntryData(analysisData));
 
